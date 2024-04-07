@@ -11,6 +11,15 @@ import os, sys
 from charset_mnbvc import api
 from better_zipfile import fixcharset_zipfile
 
+def get_directory_size(directory):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            filepath = os.path.join(dirpath, filename)
+            total_size += os.path.getsize(filepath)
+    return total_size
+
+
 def get_extension(file_path):
     filename, extension = os.path.splitext(file_path)
 
@@ -153,9 +162,8 @@ def extract_archive(file_path, extract_full_path, file, password=None):
         extract_succcessful = False
     
     if extract_succcessful:
-        with open('tobereomve.txt', 'a') as f:
-            f.write(file_path+'\n')
-
+        if os.path.getsize(file_path) <= get_directory_size(extract_full_path):
+            os.remove(file_path)
     
     return extract_succcessful
 
@@ -203,8 +211,8 @@ def traverse_directory(folder_path, passwords=None):
                         if extract_succcessful:
                             break
                 
-                if extract_succcessful:
-                    traverse_directory(extract_full_path)
+                # if extract_succcessful:
+                #     traverse_directory(extract_full_path)
                 
                 extract_path_set.add(extract_path)
 
