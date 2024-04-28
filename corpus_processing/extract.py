@@ -166,6 +166,10 @@ def extract_archive(file_path, extract_full_path, file, password=None):
     if extract_succcessful and os.path.getsize(file_path) <= get_directory_size(extract_full_path):
         os.remove(file_path)
         print(f"文件 '{file_path}' 已成功删除。")
+    elif os.path.isfile(extract_full_path) and os.path.getsize(file_path) <= os.path.getsize(extract_full_path):
+    	#有时解压出来不是dir而是file，目前看到gz包有这种情况，具体原因还需分析
+    	os.remove(file_path)
+    	print(f"文件 '{file_path}' 已成功删除。")
     else:
     	#检查路径长度，避免删除风险
         if len(extract_full_path) >= 20:
@@ -177,7 +181,7 @@ def extract_archive(file_path, extract_full_path, file, password=None):
                 except:
                     print(f"Error:目录 '{extract_full_path}' 删除报错。")
             else:
-                print("Error:提供的路径不是有效的目录。")
+                print(f"Error:提供的路径 '{extract_full_path}' 不是有效的目录。")
         else:
             print(f"Error:路径 '{extract_full_path}' 长度不足，为了安全起见，路径长度至少需要20个字符。")
     
