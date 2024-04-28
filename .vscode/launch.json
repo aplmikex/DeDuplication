@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: Debug convert.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/corpus_processing/extract.py",
+            "args": ["--folder_path","/Volumes/Elements/AITest/test/11/123", "--passwords_files","/Volumes/Elements/AITest/test/README_1.txt"],
+           // "args": ["--src_dir", "/Volumes/Elements/AITest/testlog.zip", "--dst_dir", "/Volumes/Elements/AITest/AITest", "--n_process", "4", "--threshold", "0.7"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
