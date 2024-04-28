@@ -10,13 +10,15 @@ import py7zr
 import os, sys
 from charset_mnbvc import api
 from better_zipfile import fixcharset_zipfile
+import shutil
 
 def get_directory_size(directory):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(directory):
         for filename in filenames:
             filepath = os.path.join(dirpath, filename)
-            total_size += os.path.getsize(filepath)
+            if not os.path.islink(filepath):
+                total_size += os.path.getsize(filepath)
     return total_size
 
 
@@ -161,9 +163,20 @@ def extract_archive(file_path, extract_full_path, file, password=None):
         print(f"Extracting {file_path} failed: {e}")
         extract_succcessful = False
     
-    if extract_succcessful:
-        if os.path.getsize(file_path) <= get_directory_size(extract_full_path):
-            os.remove(file_path)
+    if extract_succcessful and os.path.getsize(file_path) <= get_directory_size(extract_full_path):
+        os.remove(file_path)
+        print(f"文件 '{file_path}' 已成功删除。")
+    else:
+    	#检查路径长度，避免删除风险
+        if len(extract_full_path) >= 20:
+            # 确保路径存在，并且实际上是一个目录
+            if os.path.isdir(extract_full_path):
+                shutil.rmtree(extract_full_path)
+                print(f"目录 '{extract_full_path}' 已成功删除。")
+            else:
+                print("提供的路径不是有效的目录。")
+        else:
+            print(f"路径 '{extract_full_path}' 长度不足，为了安全起见，路径长度至少需要20个字符。")
     
     return extract_succcessful
 
