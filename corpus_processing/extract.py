@@ -171,12 +171,15 @@ def extract_archive(file_path, extract_full_path, file, password=None):
         if len(extract_full_path) >= 20:
             # 确保路径存在，并且实际上是一个目录
             if os.path.isdir(extract_full_path):
-                shutil.rmtree(extract_full_path)
-                print(f"目录 '{extract_full_path}' 已成功删除。")
+                try:
+                    shutil.rmtree(extract_full_path)
+                    print(f"目录 '{extract_full_path}' 已成功删除。")
+                except:
+                    print(f"Error:目录 '{extract_full_path}' 删除报错。")
             else:
-                print("提供的路径不是有效的目录。")
+                print("Error:提供的路径不是有效的目录。")
         else:
-            print(f"路径 '{extract_full_path}' 长度不足，为了安全起见，路径长度至少需要20个字符。")
+            print(f"Error:路径 '{extract_full_path}' 长度不足，为了安全起见，路径长度至少需要20个字符。")
     
     return extract_succcessful
 
