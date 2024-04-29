@@ -163,21 +163,24 @@ def extract_archive(file_path, extract_full_path, file, password=None):
         print(f"Extracting {file_path} failed: {e}")
         extract_succcessful = False
     
-    if extract_succcessful and os.path.getsize(file_path) <= get_directory_size(extract_full_path):
+    extract_dir_size = get_directory_size(extract_full_path)
+    file_size = os.path.getsize(file_path)
+    if extract_succcessful and file_size <= extract_dir_size:
         os.remove(file_path)
         print(f"文件 '{file_path}' 已成功删除。")
-    elif os.path.isfile(extract_full_path) and os.path.getsize(file_path) <= os.path.getsize(extract_full_path):
+    elif os.path.isfile(extract_full_path) and file_size <= os.path.getsize(extract_full_path):
     	#有时解压出来不是dir而是file，目前看到gz包有这种情况，具体原因还需分析
     	os.remove(file_path)
     	print(f"文件 '{file_path}' 已成功删除。")
     else:
-    	#检查路径长度，避免删除风险
+        print(f"解压结果为 '{extract_succcessful}'。 解压前文件大小为'{file_size}'，解压后文件夹大小为'{extract_dir_size}'")
+        #检查路径长度，避免删除风险
         if len(extract_full_path) >= 20:
             # 确保路径存在，并且实际上是一个目录
             if os.path.isdir(extract_full_path):
                 try:
                     shutil.rmtree(extract_full_path)
-                    print(f"目录 '{extract_full_path}' 已成功删除。")
+                    print(f"目录 '{extract_full_path}' 已删除。")
                 except:
                     print(f"Error:目录 '{extract_full_path}' 删除报错。")
             else:
@@ -221,8 +224,8 @@ def traverse_directory(folder_path, passwords=None):
                             raise Exception(f"Too many files in {root}")
 
                 extract_full_path = os.path.join(root, extract_path)
-                
-                extract_succcessful = extract_archive(file_path, extract_full_path, file)
+                if not os.path.islink(file_path):
+                    extract_succcessful = extract_archive(file_path, extract_full_path, file)
                 
                 if not extract_succcessful:
                     for password in passwords:
